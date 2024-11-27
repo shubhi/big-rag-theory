@@ -1,8 +1,13 @@
 import requests
 import base64
+import configparser
+
+# Load the config file
+config = configparser.ConfigParser()
+config.read('config.ini')
 
 # URL of the Lambda function
-LAMBDA_SERVER_URL = 'https://du4h657am6lbmobtw3amspowqa0eotqz.lambda-url.us-east-1.on.aws/'
+LAMBDA_SERVER_URL = config['aws']['upload_url']
 
 # File to upload
 FILE_PATH = './test_files/paper1.pdf'
