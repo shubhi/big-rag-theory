@@ -36,29 +36,33 @@ function uploadFile() {
   /**
    * Handle query submission
    */
-  function sendQuery() {
-    const queryInput = document.getElementById('userQuery').value.trim(); // Get the query input value
-    const responseBox = document.getElementById('responseBox'); // Get the response box element
-  
-    // Check if a query is entered
-    if (!queryInput) {
-      responseBox.innerHTML = '<p style="color: red;">Please enter a query.</p>';
-      return;
-    }
-  
-    setLoading('Processing query...'); // Display a loading message
-  
-    // Call the API to process the query
-    sendQueryToAPI(queryInput)
-      .then((response) => {
-        responseBox.innerHTML = `<p style="color: green;">${response.answer || 'Response received!'}</p>`;
-      })
-      .catch((error) => {
-        console.error(error);
-        responseBox.innerHTML = '<p style="color: red;">Query failed. Please try again.</p>';
-      })
-      .finally(clearLoading); // Clear the loading message
+  async function sendQuery() {
+  const queryInput = document.getElementById('userQuery');
+  const responseBox = document.getElementById('responseBox');
+
+  // Get the user's query
+  const userQuery = queryInput.value.trim();
+  if (!userQuery) {
+    responseBox.innerHTML = '<p style="color: red;">Please enter a query.</p>';
+    return;
   }
+
+  try {
+    // Send the query to the API
+    const response = await sendQueryToAPI(userQuery);
+
+    // Display the answer from the API
+    if (response && response.answer) {
+      responseBox.innerHTML = `<p style="color: green;">${response.answer}</p>`;
+    } else {
+      responseBox.innerHTML = '<p style="color: red;">No answer received from the API.</p>';
+    }
+  } catch (error) {
+    console.error('Error in sendQuery:', error);
+    responseBox.innerHTML = '<p style="color: red;">Failed to fetch the answer. Please try again.</p>';
+  }
+}
+
   
   /**
    * Helper function to show a loading message
