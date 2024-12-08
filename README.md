@@ -16,7 +16,7 @@ Table of Contents
     
 *   [How It Works](#how-it-works)
     
-*   [Future Enhancements](#future-enhancements)
+*   [Steps to Run the App](#steps-to-run-the-app)
     
 *   [Contributing](#contributing)
     
@@ -102,7 +102,7 @@ Tech Stack
     
 *   **Programming Languages**: Python for Lambda functions.
     
-*   **Frameworks**: AWS SDK (Boto3), LangChain for RAG orchestration.
+*   **Frameworks**: AWS SDK (Boto3), LangChain for RAG orchestration, Flask, HTML, CSS.
     
 
 How It Works
@@ -133,7 +133,36 @@ How It Works
     *   Context is sent to **Amazon Titan Text Express** for answer generation.
         
     *   Results are merged and returned to the user.
+
+Steps to Run the App
+--------------------
+
+Follow these steps to run the application locally:
+
+1. Open the project directory in a terminal and install the required libraries (requests and flask)
+
+```bash
+   pip install -r requirements.txt
+```
+2.  Move to the app directory
+
+```bash
+    cd app
+```
+
+3. Run the app.py
+```bash
+    python app.py
+```
     
+4.  **Access the Application**:Open the link provided in the terminal (usually http://127.0.0.1:5000) in a web browser.
+    
+5.  **Use the Application**:
+    
+    *   Use the **Upload** button to upload a file (test files included in test_files directory).
+        
+    *   Enter a query in the search bar to retrieve insights from the uploaded document.    
+
 
 Contributing
 ------------

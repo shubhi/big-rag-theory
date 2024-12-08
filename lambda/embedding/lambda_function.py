@@ -1,13 +1,32 @@
 import boto3
 import json
+from opensearchpy import OpenSearch, RequestsHttpConnection, AWSV4SignerAuth
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-# Initialize Bedrock client
+# Initialize clients
 bedrock = boto3.client('bedrock-runtime')
+s3 = boto3.client('s3')
+
+# OSS serverless config
+host = ''
+region = 'us-east-1'
+service = 'aoss'
+index_name = 'research-index'
+
+
+# Initialize OpenSearch client
+credentials = boto3.Session().get_credentials()
+auth = AWSV4SignerAuth(credentials, region, service)
+os_client = OpenSearch(
+    hosts=[{'host': host, 'port': 443}],
+    http_auth=auth,
+    use_ssl=True,
+    verify_certs=True,
+    connection_class=RequestsHttpConnection
+)
 
 def generate_embeddings(text):
     try:
-        # Log the input text
-        # print(f"Generating embeddings for text: {text}")
 
         # Invoke the Bedrock model
         try:
@@ -39,6 +58,13 @@ def generate_embeddings(text):
         print(f"Error while generating embeddings: {e}")
         raise
 
+def store_in_opensearch(text_chunk, embeddings, metadata):
+    document = {
+        'text_content': text_chunk,
+        'text_embedding': embeddings,
+        'metadata': metadata
+    }
+    os_client.index(index=index_name, body=document)
 
 # Lambda handler
 def lambda_handler(event, context):
@@ -53,13 +79,27 @@ def lambda_handler(event, context):
         response = s3.get_object(Bucket=bucket_name, Key=object_key)
         text_content = response['Body'].read().decode('utf-8')
 
-        # Generate embeddings
-        embeddings = generate_embeddings(text_content)
-        print("successful!", embeddings)
-        # Return embeddings
+        # Splitting the text file
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=100,
+            length_function=len
+        )
+
+        text_chunks = text_splitter.split_text(text_content)
+
+        # Store in the OSS Serverless index
+        for chunk in text_chunks:
+            embeddings = generate_embeddings(chunk)
+            metadata = {
+                'source': f"s3://{bucket_name}/{object_key}",
+                'chunk_size': len(chunk)
+            }
+            store_in_opensearch(chunk, embeddings, metadata)
+
         return {
             "statusCode": 200,
-            "body": json.dumps({"embeddings": embeddings})
+            "body": json.dumps({"message": f"Successfully processed and stored {len(text_chunks)} chunks"})
         }
     except Exception as e:
         print(f"Error: {e}")

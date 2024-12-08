@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS Chat Interface</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Big RAG Theory</h1>
+
+    <!-- File Upload Section -->
+    <div class="upload-section">
+      <h2>Upload a File</h2>
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" required />
+        <button type="submit">Upload</button>
+      </form>
+      {% if upload_response %}
+      <p>{{ upload_response }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Query Section -->
+    <div class="query-section">
+      <h2>Enter a Query</h2>
+      <form action="/query" method="POST">
+        <textarea name="query" rows="4" placeholder="Enter your query" required></textarea>
+        <button type="submit">Send Query</button>
+      </form>
+      {% if query_response %}
+      <div class="response-section">
+        <h2>Response</h2>
+        <div class="response-box">
+          <p>{{ query_response }}</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
