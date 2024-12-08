@@ -41,6 +41,7 @@ Architecture
 The architecture is fully serverless, leveraging AWS services for scalability and reliability.
 
 ### Workflow Diagram
+![System Architecture](architecture.jpeg)
 
 1.  **Document Upload**:
     
